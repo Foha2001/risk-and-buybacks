@@ -1,2 +1,99 @@
 ########program to analyse risk with buyback programs ####################
 ##############################################################
+#---------------importing repurchase data##########
+#------------import from file -------------
+library(readxl)
+buybacks_2010 <- read_excel("C:/Users/foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2010.xlsx")
+buybacks_2011 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2011.xlsx")
+buybacks_2012 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2012.xlsx")
+buybacks_2013 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2013.xlsx")
+buybacks_2014 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2014.xlsx")
+buybacks_2015 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2015.xlsx")
+buybacks_2016 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2016.xlsx")
+buybacks_2017 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2017.xlsx")
+buybacks_2018 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2018.xlsx")
+buybacks_2019 <- read_excel("C:/Users/Foued/OneDrive/risk and buyback/buyback on Newyork Exchange/buybacks 2019.xlsx")
+
+colnames(buybacks_2010)=c("firms","rachat")
+colnames(buybacks_2011)=c("firms","rachat")
+colnames(buybacks_2012)=c("firms","rachat")
+colnames(buybacks_2013)=c("firms","rachat")
+colnames(buybacks_2014)=c("firms","rachat")
+colnames(buybacks_2015)=c("firms","rachat")
+colnames(buybacks_2016)=c("firms","rachat")
+colnames(buybacks_2017)=c("firms","rachat")
+colnames(buybacks_2018)=c("firms","rachat")
+colnames(buybacks_2019)=c("firms","rachat")
+
+
+#made as dataframe 
+#----------------------------------
+buybacks_2010=as.data.frame(buybacks_2010)
+buybacks_2012=as.data.frame(buybacks_2012)
+buybacks_2013=as.data.frame(buybacks_2013)
+buybacks_2014=as.data.frame(buybacks_2014)
+buybacks_2015=as.data.frame(buybacks_2015)
+buybacks_2016=as.data.frame(buybacks_2016)
+buybacks_2017=as.data.frame(buybacks_2017)
+buybacks_2018=as.data.frame(buybacks_2018)
+buybacks_2019=as.data.frame(buybacks_2019)
+####subset 2010 with repurchase 
+##------------------------------
+buybacks_2010$year=2010
+buybacks_2011$year=2011
+buybacks_2012$year=2012
+buybacks_2013$year=2013
+buybacks_2014$year=2014
+buybacks_2015$year=2015
+buybacks_2016$year=2016
+buybacks_2017$year=2017
+buybacks_2018$year=2018
+buybacks_2019$year=2019
+t=do.call("rbind", list(buybacks_2010
+                        ,buybacks_2011,buybacks_2013,
+                        buybacks_2014,buybacks_2015,
+                        buybacks_2016,buybacks_2017,
+                        buybacks_2018,buybacks_2019))
+
+wrep=subset(t,t$rachat>0)
+wnrep=subset(t,t$rachat==0)
+###prepare quotesymbol#################
+##"__________----------------
+library(stringr)
+library(readxl)
+quotesymbols=read_excel("C:/Users/Foued/OneDrive/risk and buyback/quotesymbols.xlsx")
+quotesymbols$quote=str_sub(quotesymbols$Quote,1,-3)
+#------import  from quantmod############### 
+##-------------------------------
+library(quantmod)
+start_date <- Sys.Date()-3650
+end_date <- Sys.Date()
+quotes=quotesymbols$quote
+quotes=list(quotes)
+quotes=na.omit(quotes)
+######import from yahoo--------
+for (i in quotes){
+  quote[i]=getSymbols(i,src = "yahoo", from=start_date,to=end_date, auto.assign = TRUE)
+}
+library(zoo)
+library(xts)
+##############PREPARE DATA ##############
+quotesymbols$Quote=NULL
+datawrep=merge(wrep,quotesymbols)
+datawnrep=merge(wnrep,quotesymbols)
+
+###return calculation########--------
+########################
+for (i in quotes){
+   i$return=diff(log((i[,6])))
+}
+
+AA$return=diff(log(AA$AA.Adjusted))
+
+
+
+
+
+
+
+
