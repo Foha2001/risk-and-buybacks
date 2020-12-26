@@ -71,12 +71,20 @@ end_date <- Sys.Date()
 quotes=quotesymbols$quote
 quotes=list(quotes)
 quotes=na.omit(quotes)
-######import from yahoo--------
+######import from yahoo METHOD 1--------
 for (i in quotes){
   quote[i]=getSymbols(i,src = "yahoo", from=start_date,to=end_date, auto.assign = TRUE)
 }
 library(zoo)
 library(xts)
+#################import data METHOD 2#################
+
+envt <- new.env()
+
+getSymbols(quotes,env=envt,from=start_date, to=end_date)
+ETF_Adj_Data <- do.call(merge, eapply(envt, Ad))
+
+
 ##############PREPARE DATA ##############
 quotesymbols$Quote=NULL
 datawrep=merge(wrep,quotesymbols)
@@ -84,12 +92,11 @@ datawnrep=merge(wnrep,quotesymbols)
 
 ###return calculation########--------
 ########################
-for (i in quotes){
-   i$return=diff(log((i[,6])))
-}
-
-AA$return=diff(log(AA$AA.Adjusted))
-
+library(zoo)
+library(xts)
+Monthly_Adj_Data <- ETF_Adj_Data[endpoints(ETF_Adj_Data,'months')]
+###############descriptive statistics ####################
+stat=apply(Monthly_Adj_Data,2,mean)
 
 
 
