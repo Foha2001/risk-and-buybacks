@@ -104,3 +104,4 @@ stat=apply(Monthly_Adj_Data,2,mean)
 
 
 
+
