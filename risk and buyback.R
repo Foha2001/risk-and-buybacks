@@ -95,8 +95,15 @@ datawnrep=merge(wnrep,quotesymbols)
 library(zoo)
 library(xts)
 Monthly_Adj_Data <- ETF_Adj_Data[endpoints(ETF_Adj_Data,'months')]
+monthlyreturn=diff(log(Monthly_Adj_Data))
+##d####elete NA  value and columns 
+monthlyreturn=monthlyreturn[-1,]
+monthlyreturn[, -which(sapply(monthlyreturn, function(x) sum(is.na(x)))==nrow(monthlyreturn))]
+monthlyreturn <-na.fill(monthlyreturn, fill = 0.00)
+
 ###############descriptive statistics ####################
-stat=apply(Monthly_Adj_Data,2,mean)
+Treturn=apply(monthlyreturn,2,mean) # total return 
+
 
 
 
