@@ -61,7 +61,9 @@ wnrep=subset(t,t$rachat==0)
 ##"__________----------------
 library(stringr)
 library(readxl)
-quotesymbols=read_excel("C:/Users/Foued/OneDrive/risk and buyback/quotesymbols.xlsx")
+setwd("C:/Users/foha2/OneDrive/risk and buyback")
+#*****must set working directory before***********************
+quotesymbols=read_excel("quotesymbols.xlsx")
 quotesymbols$quote=str_sub(quotesymbols$Quote,1,-3)
 #------import  from quantmod############### 
 ##-------------------------------
@@ -102,8 +104,33 @@ monthlyreturn[, -which(sapply(monthlyreturn, function(x) sum(is.na(x)))==nrow(mo
 monthlyreturn <-na.fill(monthlyreturn, fill = 0.00)
 
 ###############descriptive statistics ####################
-Treturn=apply(monthlyreturn,2,mean) # total return 
+Treturn=apply(monthlyreturn,2,mean) # mean return by firms
+Treturnrow<-apply(monthlyreturn,1,mean) #mean return by date
 
+#######################export to excel
+data=as.data.frame(monthlyreturn)
+library(writexl)
+write_xlsx(data,"donnees.xlsx")  ###convertir en excel
+write.zoo(monthlyreturn,file="export.csv",
+          index.name="okay",row.names=FALSE,
+          col.names=TRUE,sep=",")##  convertir en cvs
+#----------------trasform data as dataframe----------------
+firmR<-as.data.frame(Treturn)
+dateR<-as.data.frame(Treturnrow)
+
+
+#******sytemic risk********************************
+#*****************prepare dataset**********************************
+library(SystemicR)
+library(zoo)
+library(xts)
+risk<-data.frame(date=index(monthlyreturn), coredata(monthlyreturn))
+risk$date<- format(risk$date,"%d/%m/%Y")
+library(dplyr)
+risk<-rename(risk,Date=date)
+risk$Date<-as.factor(risk$Date)
+#**********analyse risks*************************4
+f_CoVaR_Delta_CoVaR_i_q(risk)
 
 
 
